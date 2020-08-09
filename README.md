@@ -1,2 +1,2 @@
 # gotextfsm
-Portof google's textfsm library from python to golang
+golang implementation of google's textfsm library
