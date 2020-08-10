@@ -169,7 +169,7 @@ You can also marshal the resulting dict to json (or yaml) if that make is easier
 ```
 Output from the above example:
 ```
-JSON: [{"continent":"North America","countries":"Mexico","persons":[{"age":"50","name":"Siri","state":"CA"},{"age":"22","name":"Raj","state":"NM"},{"age":"150","name":"Gandhi","state":"NV"}],"state_abbr":{"abbr":"CA","fullstate":"California"}}]
+JSON: [{"continent":"North America","countries":["USA","Candada","Mexico"],"persons":[{"age":"50","name":"Siri","state":"CA"},{"age":"22","name":"Raj","state":"NM"},{"age":"150","name":"Gandhi","state":"NV"}],"state_abbr":{"abbr":"CA","fullstate":"California"}}]
 ```
 
 ## Highlights:
