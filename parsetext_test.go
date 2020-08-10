@@ -22,7 +22,7 @@ type parseTestCase struct {
 func TestParseText(t *testing.T) {
 	tc_count := 0
 	for _, tc := range parseTestCases {
-		t.Logf("Running test case %s\n", tc.name)
+		// t.Logf("Running test case %s\n", tc.name)
 		tc_count++
 		fsm := TextFSM{}
 		err := fsm.ParseString(tc.template)
@@ -755,6 +755,41 @@ Start
 			{"boo": "e", "hoo": "two"},
 			{"boo": "e", "hoo": "three"},
 			{"boo": "e", "hoo": "ten"},
+		},
+	},
+	{
+		name: "All types of outputs",
+		template: `Value continent (.*)
+Value List countries (.*)
+Value state_abbr ((?P<fullstate>\w+):\s+(?P<abbr>\w{2}))
+Value List persons ((?P<name>\w+):\s+(?P<age>\d+)\s+(?P<state>\w{2})\s*)
+
+Start
+  ^Continent: ${continent}
+  ^Country: ${countries}
+  ^State: ${state_abbr}
+  ^${persons}
+`,
+		data: `Continent: North America
+Country: USA
+Country: Candada
+Country: Mexico
+State: California: CA
+Siri: 50 CA
+Raj: 22 NM
+Gandhi: 150 NV
+`,
+		dict: []map[string]interface{}{
+			{
+				"continent":  "North America",
+				"countries":  []string{"USA", "Canada", "Mexico"},
+				"state_abbr": map[string]string{"fullstate": "California", "abbr": "CA"},
+				"persons": []map[string]string{
+					{"name": "Siri", "age": "50", "state": "CA"},
+					{"name": "Raj", "age": "22", "state": "NM"},
+					{"name": "Gandhi", "age": "150", "state": "NV"},
+				},
+			},
 		},
 	},
 }

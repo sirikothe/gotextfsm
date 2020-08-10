@@ -108,6 +108,8 @@ func (v *TextFSMValue) processScalarValue(newval string) {
 					finalval = make([]string, 0)
 					finalval = append(finalval.([]string), newval)
 				}
+			} else {
+				finalval = append(v.curval.([]string), newval)
 			}
 		}
 	}
