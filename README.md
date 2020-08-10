@@ -23,18 +23,18 @@ import "github.com/sirikothe/gotextfsm"
 ```
 Create a TextFSM Object and parse the template
 ```
-	fsm := gotextfsm.TextFSM{}
-    # template should hold the string of the Textfsm to be parsed.
-	err := fsm.ParseString(template)
-    # err will be nil if the parsing of the template is successful. 
-    # If will contain error object if the parsing failed.
+  fsm := gotextfsm.TextFSM{}
+  # template should hold the string of the Textfsm to be parsed.
+  err := fsm.ParseString(template)
+  # err will be nil if the parsing of the template is successful. 
+  # If will contain error object if the parsing failed.
 ```
 Parse a raw input string using the fsm object created
 ```
-    parser := gotextfsm.ParserOutput{}
-	err = parser.ParseTextString(input, fsm, true)
-    # err will be nil if the parsing of the template is successful. 
-    # If will contain error object if the parsing failed.
+  parser := gotextfsm.ParserOutput{}
+  err = parser.ParseTextString(input, fsm, true)
+  # err will be nil if the parsing of the input (as per the fsm provided) is successful. 
+  # If will contain error object if the parsing failed.
 ```
 At the end of the parsing of input, the parser's Dict object contains the results
 
@@ -182,6 +182,17 @@ JSON: [{"continent":"North America","countries":"Mexico","persons":[{"age":"50",
 * [TODO] All the test cases of ntc-templates are executed.
 (https://github.com/networktocode/ntc-templates)
 * [TODO] All the templates of ntc-templates are parsed to make sure there are no errors thrown for valid textfsm templates.
+
+## Differences with Python's implementation
+Following are the differences between this implementation of TextFSM and original implementation of Python:
+* Python's implementation provides 2 ways of getting results.
+    * Output as a list of lists (outer list represents a record and inner list contains the values. - in the order the Values declared)
+    * Output as a list of dicts.
+  This implementation provides the output as only slice of maps. It does not provide as slice of slices.
+* [TODO]This implementation (currently) implements the code TextFSM Functionality. It does not implement the following 
+    * clitable
+    * terminal
+    * texttable
 
 ## Testing
 ```
