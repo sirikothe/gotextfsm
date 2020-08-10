@@ -189,31 +189,37 @@ Following are the differences between this implementation of TextFSM and origina
     * Output as a list of lists (outer list represents a record and inner list contains the values. - in the order the Values declared)
     * Output as a list of dicts.
   This implementation provides the output as only slice of maps. It does not provide as slice of slices.
-* [TODO]This implementation (currently) implements the code TextFSM Functionality. It does not implement the following 
+* [TODO]This implementation (currently) implements the core TextFSM Functionality. It does not implement the following 
     * clitable
     * terminal
     * texttable
 
+## Caveats
+There are differences in golang's regular expression implementation and python's.
+Because of this reason, some templates that are valid in python fail parsing in gotextfsm.
+Following are some of the known examples:
+* golang restricts repeat cound to be 1000 while python allows it to be 2^^16 -1. Because of this reason, the regular expressions like `Value SAP_COUNT ([0-9]{1,1500})` throw an error.
+More details about this are discussed at https://github.com/golang/go/issues/7252
+* golang does not support perl syntax like `(?<`. The regex like `Value NAME (\S.*(?<!\s))` throws an error
 ## Testing
 ```
-PS C:\Users\siri\code\nuviso\GitHub\gotextfsm> go test -v    
+PS C:\Users\siri\code\nuviso\GitHub\gotextfsm> go test -v
 === RUN   TestParseText
-    parsetext_test.go:82: Executed 37 test cases
+    parsetext_test.go:82: Executed 38 test cases
 --- PASS: TestParseText (0.02s)
 === RUN   TestPyTemplate
     pytemplate_test.go:31: Executed 8 test cases
 --- PASS: TestPyTemplate (0.00s)
 === RUN   TestRuleParse
     rule_test.go:41: Executed 25 test cases
---- PASS: TestRuleParse (0.01s)
-=== RUN   TestFSMParse
+--- PASS: TestRuleParse (0.00s)
     textfsm_test.go:83: Executed 55 test cases
 --- PASS: TestFSMParse (0.01s)
 === RUN   TestValueParse
-    value_test.go:56: Executed 26 test cases
+    value_test.go:56: Executed 27 test cases
 --- PASS: TestValueParse (0.00s)
 PASS
-ok      _/C_/Users/siri/code/nuviso/GitHub/gotextfsm    0.216s
+ok      _/C_/Users/siri/code/nuviso/GitHub/gotextfsm    0.208s
 PS C:\Users\siri\code\nuviso\GitHub\gotextfsm> go test -cover
 PASS
 coverage: 97.1% of statements

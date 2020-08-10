@@ -120,7 +120,7 @@ func stringListEquals(t1 []string, t2 []string) bool {
 		return false
 	}
 	for i, v := range t1 {
-		if !valsEquals(v, t1[i]) {
+		if !valsEquals(v, t2[i]) {
 			return false
 		}
 	}
@@ -131,7 +131,7 @@ func mapListEquals(t1 []map[string]string, t2 []map[string]string) bool {
 		return false
 	}
 	for i, v := range t1 {
-		if !valsEquals(v, t1[i]) {
+		if !valsEquals(v, t2[i]) {
 			return false
 		}
 	}
@@ -772,7 +772,7 @@ Start
 `,
 		data: `Continent: North America
 Country: USA
-Country: Candada
+Country: Canada
 Country: Mexico
 State: California: CA
 Siri: 50 CA
@@ -790,6 +790,22 @@ Gandhi: 150 NV
 					{"name": "Gandhi", "age": "150", "state": "NV"},
 				},
 			},
+		},
+	},
+	{
+		name: "Test Square brackets",
+		template: `Value country ([a-zA-Z]+)
+
+Start
+  ^Country: ${country} -> Record
+`,
+		data: `Continent: North America
+Country: USA
+Country: Canada
+Country: Mexico
+`,
+		dict: []map[string]interface{}{
+			{"country": "USA"}, {"country": "Canada"}, {"country": "Mexico"},
 		},
 	},
 }
