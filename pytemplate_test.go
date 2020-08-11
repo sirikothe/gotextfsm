@@ -72,4 +72,9 @@ var pyTemplateTestcases = []pyTemplateTestcase{
 		vars:   map[string]interface{}{"world": "Siri", "world123": "Bigger"},
 		output: `Escape {{ and }}`,
 	},
+	{
+		input:  `^\s+in\s+use\s+settings\s+=\{${INBOUND_SETTINGS_IN_USE},\s+\}\s*`,
+		vars:   map[string]interface{}{"INBOUND_SETTINGS_IN_USE": "Hello"},
+		output: `^\s+in\s+use\s+settings\s+=\{Hello,\s+\}\s*`,
+	},
 }

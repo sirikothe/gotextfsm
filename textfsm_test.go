@@ -16,6 +16,7 @@ type fsmTestCase struct {
 func TestFSMParse(t *testing.T) {
 	tc_count := 0
 	for _, tc := range fsmtestcases {
+		// fmt.Printf("Test case %s\n", tc.name)
 		tc_count++
 		v := TextFSM{}
 		err := v.ParseString(tc.input)
@@ -475,5 +476,17 @@ End
 		input:  "Value Filldown B.*r (beer)\n\nStart\n",
 		values: map[string]string{"B.*r": "Value Filldown B.*r (beer)"},
 		states: map[string][]string{"Start": []string{}},
+	},
+	{
+		name: "Template with { in regex",
+		input: `Value INBOUND_SETTINGS_IN_USE (.*)
+
+Start
+	^\s+in\s+use\s+settings\s+=\{${INBOUND_SETTINGS_IN_USE},\s+\}\s*
+
+EOF
+`,
+		values: map[string]string{"INBOUND_SETTINGS_IN_USE": "Value INBOUND_SETTINGS_IN_USE (.*)"},
+		states: map[string][]string{"Start": []string{` ^\s+in\s+use\s+settings\s+=\{${INBOUND_SETTINGS_IN_USE},\s+\}\s*`}, "EOF": []string{}},
 	},
 }

@@ -19,15 +19,10 @@ import (
 // Assumes all the variables are proper variable identifiers
 // Then executes the resulting golang template on the map passed.
 func ExecutePythonTemplate(pytemplate string, vars_map map[string]interface{}) (string, error) {
-	// Escape {{ and }} with {{"{{"}} and {{"}}"}}
-	t := strings.ReplaceAll(pytemplate, "{{", `{{"{{"`)
-	t = strings.ReplaceAll(t, "}}", `"}}"}}`)
-	t = strings.ReplaceAll(t, `{{"{{"`, `{{"{{"}}`)
-	t = strings.ReplaceAll(t, `"}}"}}`, `{{"}}"}}`)
-
+	t := pytemplate
 	// Replace ${xxxx} with {{.xxxx}}
-	r1 := regexp.MustCompile(`\$\{([^${}]+)\}`)
-	t = r1.ReplaceAllString(t, "{{.$1}}")
+	r1 := regexp.MustCompile(`\$\{([^$\{\}]+)\}`)
+	t = r1.ReplaceAllString(t, "__DOUBLE_OPENBR__ .$1 __DOUBLE_CLOSEBR__")
 	if vars_map != nil {
 		keys := make([]string, 0, len(vars_map))
 		for k := range vars_map {
@@ -37,11 +32,20 @@ func ExecutePythonTemplate(pytemplate string, vars_map map[string]interface{}) (
 		// This is done so that $var1234 is replaced first before replacing $var12 for example.
 		sort.SliceStable(keys, func(i, j int) bool { return len(keys[i]) > len(keys[j]) })
 		for _, key := range keys {
-			t = regexp.MustCompile(`\$(`+key+`)`).ReplaceAllString(t, "{{.$1}}")
+			t = regexp.MustCompile(`\$(`+key+`)`).ReplaceAllString(t, "__DOUBLE_OPENBR__ .$1 __DOUBLE_CLOSEBR__")
 		}
 	}
 	// Replace $$ with $
 	t = strings.ReplaceAll(t, "$$", "$")
+	// Escape { and } with {{"{"}} and {{"}"}}
+	// Generally speaking, golang template has special meeaning for {{ and }}. Hence, we should escape only {{ and }}
+	//
+	// But. Looks like golang template barks at something like \{{{.INBOUND_SETTINGS_IN_USE}}
+	// Hence, we escape every single { and } instead of only {{ and }}
+	t = strings.ReplaceAll(t, "{", `__DOUBLE_OPENBR__"{"__DOUBLE_CLOSEBR__`)
+	t = strings.ReplaceAll(t, "}", `__DOUBLE_OPENBR__"}"__DOUBLE_CLOSEBR__`)
+	t = strings.ReplaceAll(t, "__DOUBLE_OPENBR__", `{{`)
+	t = strings.ReplaceAll(t, "__DOUBLE_CLOSEBR__", `}}`)
 	var sb strings.Builder
 	gotemplate, err := template.New("test").Parse(t)
 	if err != nil {

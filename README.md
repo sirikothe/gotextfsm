@@ -203,23 +203,23 @@ More details about this are discussed at https://github.com/golang/go/issues/725
 * golang does not support perl syntax like `(?<`. The regex like `Value NAME (\S.*(?<!\s))` throws an error
 ## Testing
 ```
-PS C:\Users\siri\code\nuviso\GitHub\gotextfsm> go test -v
+PS C:\Users\siri\code\nuviso\GitHub\gotextfsm> go test  -v
 === RUN   TestParseText
     parsetext_test.go:82: Executed 38 test cases
---- PASS: TestParseText (0.02s)
 === RUN   TestPyTemplate
-    pytemplate_test.go:31: Executed 8 test cases
+    pytemplate_test.go:31: Executed 9 test cases
 --- PASS: TestPyTemplate (0.00s)
 === RUN   TestRuleParse
     rule_test.go:41: Executed 25 test cases
 --- PASS: TestRuleParse (0.00s)
-    textfsm_test.go:83: Executed 55 test cases
+=== RUN   TestFSMParse
+    textfsm_test.go:84: Executed 56 test cases
 --- PASS: TestFSMParse (0.01s)
 === RUN   TestValueParse
     value_test.go:56: Executed 27 test cases
 --- PASS: TestValueParse (0.00s)
 PASS
-ok      _/C_/Users/siri/code/nuviso/GitHub/gotextfsm    0.208s
+ok      _/C_/Users/siri/code/nuviso/GitHub/gotextfsm    0.207s
 PS C:\Users\siri\code\nuviso\GitHub\gotextfsm> go test -cover
 PASS
 coverage: 97.1% of statements
