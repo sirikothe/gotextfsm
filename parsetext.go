@@ -71,6 +71,7 @@ func (t *ParserOutput) ParseTextScanner(scanner *bufio.Scanner, fsm TextFSM, eof
 		// Suppressed if Null EOF state is instantiated.
 		t.appendRecord(fsm)
 	}
+
 	// Handle Fillup case.
 	prev_vals := make(map[string]interface{})
 	// Fix for https://github.com/sirikothe/gotextfsm/issues/2
@@ -83,14 +84,16 @@ func (t *ParserOutput) ParseTextScanner(scanner *bufio.Scanner, fsm TextFSM, eof
 	for i := len(t.Dict) - 1; i >= 0; i-- {
 		m := t.Dict[i]
 		for name, valobj := range fsm.Values {
-			curval, exists := m[name]
-			if !exists || valobj.isEmptyValue(curval) {
-				prev, prev_exists := prev_vals[name]
-				if prev_exists && prev != nil {
-					m[name] = prev
+			if FindIndex(valobj.Options, "Fillup") >= 0 {
+				curval, exists := m[name]
+				if !exists || valobj.isEmptyValue(curval) {
+					prev, prev_exists := prev_vals[name]
+					if prev_exists && prev != nil {
+						m[name] = prev
+					}
+				} else {
+					prev_vals[name] = curval
 				}
-			} else {
-				prev_vals[name] = curval
 			}
 		}
 	}

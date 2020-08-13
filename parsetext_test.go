@@ -66,6 +66,7 @@ func TestParseText(t *testing.T) {
 		}
 		// Dict in 'out' is always initialized to empty slice. Guaranteed not to be nil
 		got := out.Dict
+
 		if len(expected) != len(got) {
 			t.Errorf("'%s' failed. Expected %d records. Got %d records. %v", tc.name, len(expected), len(got), got)
 			continue
@@ -809,7 +810,7 @@ Country: Mexico
 		},
 	},
 	{
-		name: "Test Practical case 1",
+		name: "Test Fillup with explicit EOF",
 		template: `Value Filldown FILE_SYSTEM (\S+)
 Value PERMISSIONS (\S+)
 Value SIZE (\d+)
@@ -843,6 +844,74 @@ EOF
 			{"FILE_SYSTEM": "flash:/", "PERMISSIONS": "-rwx", "SIZE": "591941836", "DATE_TIME": "Aug 2  2017", "NAME": "EOS-4.18.3.1F.swi", "TOTAL_SIZE": "3519041536", "TOTAL_FREE": "1725112320"},
 			{"FILE_SYSTEM": "flash:/", "PERMISSIONS": "-rwx", "SIZE": "609823300", "DATE_TIME": "Feb 14 02:03", "NAME": "EOS-4.19.5M.swi", "TOTAL_SIZE": "3519041536", "TOTAL_FREE": "1725112320"},
 			{"FILE_SYSTEM": "flash:/", "PERMISSIONS": "-rwx", "SIZE": "29", "DATE_TIME": "Aug 23  2017", "NAME": "boot-config", "TOTAL_SIZE": "3519041536", "TOTAL_FREE": "1725112320"},
+		},
+	},
+	{
+		name: "Show Interfaces",
+		template: `Value Required INTERFACE (\S+)
+Value LINK_STATUS (.*)
+Value PROTOCOL_STATUS (.*)
+Value HARDWARE_TYPE ([\w+-]+)
+Value ADDRESS ([a-zA-Z0-9]+.[a-zA-Z0-9]+.[a-zA-Z0-9]+)
+Value BIA ([a-zA-Z0-9]+.[a-zA-Z0-9]+.[a-zA-Z0-9]+)
+Value DESCRIPTION (.*)
+Value IP_ADDRESS (\d+\.\d+\.\d+\.\d+\/\d+)
+Value MTU (\d+)
+Value BANDWIDTH (\d+\s+\w+)
+		
+Start
+  ^${INTERFACE}\s+is\s+${LINK_STATUS},\s+line\s+protocol\s+is\s+${PROTOCOL_STATUS}$$
+  ^\s+Hardware\s+is\s+${HARDWARE_TYPE}(.*address\s+is\s+${ADDRESS})*(.*bia\s+${BIA})*
+  ^\s+Description:\s+${DESCRIPTION}
+  ^\s+Internet\s+address\s+is\s+${IP_ADDRESS}
+  ^.*MTU\s+${MTU}(.*BW\s+${BANDWIDTH})* -> Record		
+`,
+		data: `Ethernet1 is up, line protocol is up (connected)
+  Hardware is Ethernet, address is 0800.27dc.5443
+  Internet address is 172.16.1.1/24
+  Broadcast address is 255.255.255.255
+  Address determined by manual configuration
+  IP MTU 1500 bytes , BW 10000000 kbit
+  Full-duplex, 10Gb/s, auto negotiation: off, uni-link: unknown
+  Up 14 minutes, 2 seconds
+  1 link status changes since last clear
+  Last clearing of "show interface" counters never
+  5 minutes input rate 0 bps (0.0% with framing overhead), 0 packets/sec
+  5 minutes output rate 0 bps (0.0% with framing overhead), 0 packets/sec
+    292 packets input, 31440 bytes
+    Received 3 broadcasts, 0 multicast
+    0 runts, 0 giants
+    0 input errors, 0 CRC, 0 alignment, 0 symbol, 0 input discards
+    0 PAUSE input
+    203 packets output, 33221 bytes
+    Sent 0 broadcasts, 32 multicast
+    0 output errors, 0 collisions
+    0 late collision, 0 deferred, 0 output discards
+	0 PAUSE output
+Ethernet49/1 is administratively down, line protocol is notpresent (disabled)
+	Hardware is Ethernet, address is fcbd.67e2.b922 (bia fcbd.67e2.b922)
+	Ethernet MTU 9214 bytes , BW 100000000 kbit
+	Full-duplex, 100Gb/s, auto negotiation: off, uni-link: n/a
+	Down 6 days, 11 hours, 16 minutes, 54 seconds
+	Loopback Mode : None
+	1 link status changes since last clear
+	Last clearing of "show interface" counters 6 days, 11:19:37 ago
+	5 minutes input rate 0 bps (0.0% with framing overhead), 0 packets/sec
+	5 minutes output rate 0 bps (0.0% with framing overhead), 0 packets/sec
+	   0 packets input, 0 bytes
+	   Received 0 broadcasts, 0 multicast
+	   0 runts, 0 giants
+	   0 input errors, 0 CRC, 0 alignment, 0 symbol, 0 input discards
+	   0 PAUSE input
+	   0 packets output, 0 bytes
+	   Sent 0 broadcasts, 0 multicast
+	   0 output errors, 0 collisions
+	   0 late collision, 0 deferred, 0 output discards
+	   0 PAUSE output
+`,
+		dict: []map[string]interface{}{
+			{"INTERFACE": "Ethernet1", "LINK_STATUS": "up", "PROTOCOL_STATUS": "up (connected)", "HARDWARE_TYPE": "Ethernet", "ADDRESS": "0800.27dc.5443", "BIA": "", "DESCRIPTION": "", "IP_ADDRESS": "172.16.1.1/24", "MTU": "1500", "BANDWIDTH": "10000000 kbit"},
+			{"INTERFACE": "Ethernet49/1", "LINK_STATUS": "administratively down", "PROTOCOL_STATUS": "notpresent (disabled)", "HARDWARE_TYPE": "Ethernet", "ADDRESS": "fcbd.67e2.b922", "BIA": "fcbd.67e2.b922", "DESCRIPTION": "", "IP_ADDRESS": "", "MTU": "9214", "BANDWIDTH": "100000000 kbit"},
 		},
 	},
 }
