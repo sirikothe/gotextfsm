@@ -755,7 +755,7 @@ Start
 		dict: []map[string]interface{}{
 			{"boo": "e", "hoo": "two"},
 			{"boo": "e", "hoo": "three"},
-			{"boo": "e", "hoo": "ten"},
+			{"boo": "", "hoo": "ten"},
 		},
 	},
 	{
@@ -912,6 +912,89 @@ Ethernet49/1 is administratively down, line protocol is notpresent (disabled)
 		dict: []map[string]interface{}{
 			{"INTERFACE": "Ethernet1", "LINK_STATUS": "up", "PROTOCOL_STATUS": "up (connected)", "HARDWARE_TYPE": "Ethernet", "ADDRESS": "0800.27dc.5443", "BIA": "", "DESCRIPTION": "", "IP_ADDRESS": "172.16.1.1/24", "MTU": "1500", "BANDWIDTH": "10000000 kbit"},
 			{"INTERFACE": "Ethernet49/1", "LINK_STATUS": "administratively down", "PROTOCOL_STATUS": "notpresent (disabled)", "HARDWARE_TYPE": "Ethernet", "ADDRESS": "fcbd.67e2.b922", "BIA": "fcbd.67e2.b922", "DESCRIPTION": "", "IP_ADDRESS": "", "MTU": "9214", "BANDWIDTH": "100000000 kbit"},
+		},
+	},
+	{
+		name: "Show ip helper",
+		template: `Value Required INTERFACE (\S+)
+Value List IP_HELPER (\d+\.\d+\.\d+\.\d+|\S+)
+
+Start
+  ^DHCP
+  ^Interface -> Continue.Record
+  ^Interface:\s+${INTERFACE}$$
+  ^\s+DHCP\s+Smart
+  ^\s+DHCP\s+servers:\s+${IP_HELPER}$$
+  ^\s+${IP_HELPER}$$
+  ^$$
+  ^. -> Error	
+`,
+		data: `
+DHCP Relay is active
+DHCP Relay Option 82 is disabled
+DHCPv6 Relay Link-layer Address Option (79) is disabled
+DHCP Smart Relay is disabled
+Interface: Vlan1
+    DHCP Smart Relay is disabled
+    DHCP servers: 10.1.0.0
+                  10.1.0.1
+                  10.1.0.2
+                  10.1.0.3
+                  server.domain
+Interface: Vlan2
+    DHCP Smart Relay is disabled
+    DHCP servers: 10.1.0.4
+                  server.domain
+`,
+		dict: []map[string]interface{}{
+			{"INTERFACE": "Vlan1", "IP_HELPER": []string{"10.1.0.0", "10.1.0.1", "10.1.0.2", "10.1.0.3", "server.domain"}},
+			{"INTERFACE": "Vlan2", "IP_HELPER": []string{"10.1.0.4", "server.domain"}},
+		},
+	},
+	{
+		name: "Show ip route",
+		template: `Value Filldown VRF (\S+)
+Value Filldown PROTOCOL (\S+\s\S+?|\w?)
+Value Filldown NETWORK (\d+.\d+.\d+.\d+)
+Value Filldown MASK (\d+)
+Value Filldown DISTANCE (\d+)
+Value Filldown METRIC (\d+)
+Value DIRECT (directly)
+Value Required NEXT_HOP (connected|\d+\.\d+\.\d+\.\d+)
+Value INTERFACE (\S+)
+
+Start
+  ^\s+${PROTOCOL}\s+${NETWORK}/${MASK}\s+(?:\[${DISTANCE}/${METRIC}\]|is\s+${DIRECT})(?:.+?)${NEXT_HOP},\s+${INTERFACE}$$ -> Record
+  ^\s+via\s+${NEXT_HOP},\s+${INTERFACE} -> Record
+  ^VRF\s+name:\s+${VRF}\s*$$
+  ^VRF:\s+${VRF}\s*$$
+  ^WARNING
+  ^kernel
+  ^Codes:
+  # Match for codes
+  ^\s+\S+\s+-\s+\S+
+  ^Gateway\s+of\s+last
+  ^\s*$$
+  ^. -> Error		
+`,
+		data: `
+Codes: C - connected, S - static, K - kernel, 
+    O - OSPF, IA - OSPF inter area, E1 - OSPF external type 1,
+	E2 - OSPF external type 2, N1 - OSPF NSSA external type 1,
+	N2 - OSPF NSSA external type2, B I - iBGP, B E - eBGP,
+	R - RIP, I - ISIS, A B - BGP Aggregate, A O - OSPF Summary,
+	NG - Nexthop Group Static Route 
+ 
+Gateway of last resort is not set
+
+ B E    10.1.31.100/32 [200/0] via 192.168.17.5, Ethernet18
+ B E    10.1.31.101/32 [200/0] via 192.168.17.5, Ethernet18
+ C      10.1.31.102/32 is directly connected, Loopback100
+`,
+		dict: []map[string]interface{}{
+			{"VRF": "", "PROTOCOL": "B E", "NETWORK": "10.1.31.100", "MASK": "32", "DISTANCE": "200", "METRIC": "0", "DIRECT": "", "NEXT_HOP": "192.168.17.5", "INTERFACE": "Ethernet18"},
+			{"VRF": "", "PROTOCOL": "B E", "NETWORK": "10.1.31.101", "MASK": "32", "DISTANCE": "200", "METRIC": "0", "DIRECT": "", "NEXT_HOP": "192.168.17.5", "INTERFACE": "Ethernet18"},
+			{"VRF": "", "PROTOCOL": "C", "NETWORK": "10.1.31.102", "MASK": "32", "DISTANCE": "", "METRIC": "", "DIRECT": "directly", "NEXT_HOP": "connected", "INTERFACE": "Loopback100"},
 		},
 	},
 }

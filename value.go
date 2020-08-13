@@ -100,7 +100,7 @@ func (v *TextFSMValue) processScalarValue(newval string) {
 	if FindIndex(v.Options, "List") >= 0 {
 		// If the value is 'List', add the new value to the current value.
 		if newval != "" {
-			if v.isEmptyValue(v.curval) {
+			if v.curval == nil {
 				if FindIndex(v.Options, "Filldown") >= 0 && v.filldown_value != nil {
 					// curval is null. But there is a filldown value. Append to filldown value
 					finalval = append(v.filldown_value.([]string), newval)
@@ -115,7 +115,7 @@ func (v *TextFSMValue) processScalarValue(newval string) {
 	}
 	if FindIndex(v.Options, "Filldown") >= 0 {
 		// If there is Filldown present, Remember the new value as filldown value
-		if v.isEmptyValue(finalval) {
+		if finalval == nil {
 			finalval = v.filldown_value
 		} else {
 			v.filldown_value = finalval
@@ -152,7 +152,7 @@ func (v *TextFSMValue) processMapValue(newval map[string]string) {
 	}
 	if FindIndex(v.Options, "Filldown") >= 0 {
 		// If there is Filldown present, Remember the new value as filldown value
-		if v.isEmptyValue(finalval) {
+		if finalval == nil {
 			finalval = v.filldown_value
 		} else {
 			v.filldown_value = finalval
