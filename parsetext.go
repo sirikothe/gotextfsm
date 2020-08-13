@@ -73,6 +73,13 @@ func (t *ParserOutput) ParseTextScanner(scanner *bufio.Scanner, fsm TextFSM, eof
 	}
 	// Handle Fillup case.
 	prev_vals := make(map[string]interface{})
+	// Fix for https://github.com/sirikothe/gotextfsm/issues/2
+	// If Fillup is present, initialize prev_vals to the last record (that may not have been appeneded)
+	if eof_exists {
+		for key, val := range fsm.Values {
+			prev_vals[key] = val.getFinalValue()
+		}
+	}
 	for i := len(t.Dict) - 1; i >= 0; i-- {
 		m := t.Dict[i]
 		for name, valobj := range fsm.Values {

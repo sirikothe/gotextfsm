@@ -808,4 +808,41 @@ Country: Mexico
 			{"country": "USA"}, {"country": "Canada"}, {"country": "Mexico"},
 		},
 	},
+	{
+		name: "Test Practical case 1",
+		template: `Value Filldown FILE_SYSTEM (\S+)
+Value PERMISSIONS (\S+)
+Value SIZE (\d+)
+Value DATE_TIME (\S+\s+\d+\s+((\d+)|(\d+:\d+)))
+Value NAME (\S+)
+Value Fillup TOTAL_SIZE (\d+)
+Value Fillup TOTAL_FREE (\d+)
+		
+Start
+  ^Directory of\s+${FILE_SYSTEM} -> DIR
+
+DIR
+  ^\s+${PERMISSIONS}\s+${SIZE}\s+${DATE_TIME}\s+${NAME} -> Record
+  ^${TOTAL_SIZE}\s+\S+\s+\S+\s+\(${TOTAL_FREE}\s+\S+\s+\S+\)
+  ^\s+$$
+  ^$$
+  ^.* -> Error "LINE NOT FOUND"
+
+EOF
+`,
+		data: `Directory of flash:/
+
+		-rwx   591941836            Aug 2  2017  EOS-4.18.3.1F.swi
+		-rwx   609823300           Feb 14 02:03  EOS-4.19.5M.swi
+		-rwx          29           Aug 23  2017  boot-config
+
+3519041536 bytes total (1725112320 bytes free)
+ 
+`,
+		dict: []map[string]interface{}{
+			{"FILE_SYSTEM": "flash:/", "PERMISSIONS": "-rwx", "SIZE": "591941836", "DATE_TIME": "Aug 2  2017", "NAME": "EOS-4.18.3.1F.swi", "TOTAL_SIZE": "3519041536", "TOTAL_FREE": "1725112320"},
+			{"FILE_SYSTEM": "flash:/", "PERMISSIONS": "-rwx", "SIZE": "609823300", "DATE_TIME": "Feb 14 02:03", "NAME": "EOS-4.19.5M.swi", "TOTAL_SIZE": "3519041536", "TOTAL_FREE": "1725112320"},
+			{"FILE_SYSTEM": "flash:/", "PERMISSIONS": "-rwx", "SIZE": "29", "DATE_TIME": "Aug 23  2017", "NAME": "boot-config", "TOTAL_SIZE": "3519041536", "TOTAL_FREE": "1725112320"},
+		},
+	},
 }
