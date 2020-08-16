@@ -410,7 +410,7 @@ Start
   ^\s*${name}
   ^\s*$$ -> Record
 `,
-		data: " Bob: 32 NC\n Alice: 27 NY\n Jeff: 45 CA\nJulia\n\n\n\nSiri",
+		data: " Bob: 32 NC\n Alice: 27 NY\n Jeff: 45 CA\nJulia\n\nSiri",
 		dict: []map[string]interface{}{
 			{
 				"foo":  map[string]string{"name": "Jeff", "age": "45", "state": "CA"},
@@ -724,6 +724,25 @@ Start
 		template: `# Headline
 Value Filldown boo (o.*)
 Value hoo (t.*)
+
+Start
+  ^$boo
+  ^$hoo -> Record
+
+`,
+		data: "one\ntwo\nthree\nother\nten",
+		dict: []map[string]interface{}{
+			{"boo": "one", "hoo": "two"},
+			{"boo": "one", "hoo": "three"},
+			{"boo": "other", "hoo": "ten"},
+			{"boo": "other", "hoo": ""},
+		},
+	},
+	{
+		name: "Filldown with new value 2",
+		template: `# Headline
+Value Filldown boo (o.*)
+Value Required hoo (t.*)
 
 Start
   ^$boo
@@ -1069,4 +1088,109 @@ Fabric6 Ok     74 days, 0:25:22`,
 			{"MODULE": "Fabric1", "PORTS": "0", "CARD": "DCS-7508R", "TYPE": "Fabric", "MODEL": "7508R-FM", "SERIAL_NUM": "XX16472732", "MAC_ADDRESS_START": "44:4c:a8:e6:17:5e", "MAC_ADDRESS_END": "44:4c:a8:e6:17:5f",
 				"HW_VER": "14.20", "SW_VER": "4.19.5M", "STATUS": "Ok", "UPTIME": "74 days, 0:25:22"},
 		},
-	}}
+	},
+	{
+		name: "Test broadcom fastiron show version",
+		template: `Value List SWITCH_ID (\d+)
+Value List POE (POE)
+
+Start
+	^show\s+version
+	^\s+UNIT\s+${SWITCH_ID}
+	^\s+\(.+?\)\s+from\s+\S+\s+.*\s*$$
+	^\s*SW:\s+Version\s+.*
+	^\s*Boot-Monitor.*,\s+Version:.*\s*$$
+	^\s*HW:\s+.*\s*$$
+	^\s+Copyright
+	^\s*$$
+	^=+\s*$$ -> Hardware
+	^. -> Error
+
+Hardware
+	^UNIT\s+\d+:\s+SL\s+\S+:\s+\S+\s+(?:${POE}\s+|)\d+(?:-|)port\s+\S+\s+Module\s*$$
+`,
+		data: `
+show version
+
+  Copyright (c) 1996-2016 Brocade Communications Systems, Inc. All rights reserved.
+  UNIT 1: compiled on May 19 2016 at 01:15:45 labeled as ICX64S08030h
+	  (8500344 bytes) from Primary ICX64S08030h.bin
+	  SW: Version 08.0.30hT311
+  UNIT 2: compiled on May 19 2016 at 01:15:45 labeled as ICX64S08030h
+	  (8500344 bytes) from Primary ICX64S08030h.bin
+	  SW: Version 08.0.30hT311
+  UNIT 3: compiled on May 19 2016 at 01:15:45 labeled as ICX64S08030h
+	  (8500344 bytes) from Primary ICX64S08030h.bin
+	  SW: Version 08.0.30hT311
+  UNIT 4: compiled on May 19 2016 at 01:15:45 labeled as ICX64S08030h
+	  (8500344 bytes) from Primary ICX64S08030h.bin
+	  SW: Version 08.0.30hT311
+  UNIT 5: compiled on May 19 2016 at 01:15:45 labeled as ICX64S08030h
+	  (8500344 bytes) from Primary ICX64S08030h.bin
+	  SW: Version 08.0.30hT311
+  UNIT 6: compiled on May 19 2016 at 01:15:45 labeled as ICX64S08030h
+	  (8500344 bytes) from Primary ICX64S08030h.bin
+	  SW: Version 08.0.30hT311
+  Boot-Monitor Image size = 786944, Version:10.1.05T310 (kxz10105)
+  HW: Stackable ICX6450-48-HPOE
+==========================================================================
+UNIT 1: SL 1: ICX6450-48P POE 48-port Management Module
+	Serial  #: BZT3217M025
+	License: BASE_SOFT_PACKAGE   (LID: dbvIHGMoFHK)
+	P-ENGINE  0: type DEF0, rev 01
+	P-ENGINE  1: type DEF0, rev 01
+==========================================================================
+UNIT 1: SL 2: ICX6450-SFP-Plus 4port 40G Module
+`,
+		dict: []map[string]interface{}{
+			{"SWITCH_ID": []string{"1", "2", "3", "4", "5", "6"}, "POE": []string{"POE", ""}},
+		},
+	},
+	{
+		name: "Test match number based regex",
+		template: `Value List DHCP_SELECTION ([linksubet\-co]+)
+Value List DHCP_SERVER (\d+\.\d+\.\d+\.\d+)
+
+Start
+	^\s+dhcp\-server(\s+){0,1}(${DHCP_SELECTION}{0,1})\s+${DHCP_SERVER}\s*
+
+`,
+		data: `
+	dhcp-server 10.10.10.10
+	dhcp-server link-selection 10.10.10.11
+	dhcp-server subnet-selection 10.10.10.12
+	   `,
+		dict: []map[string]interface{}{
+			{"DHCP_SELECTION": []string{"", "link-selection", "subnet-selection"}, "DHCP_SERVER": []string{"10.10.10.10", "10.10.10.11", "10.10.10.12"}},
+		},
+	},
+	{
+		name: "Last row empty, but has a filldown",
+		template: `Value Filldown MODE (((\w+)(\s)?){1,})
+Value ALIAS (\w+)
+Value COMMAND ((\w+(\s|\S))+)
+
+Start
+  ^${MODE}\saliases: -> ALIAS
+  # Capture time-stamp if vty line has command time-stamping turned on
+  ^Load\s+for\s+
+  ^Time\s+source\s+is
+
+ALIAS
+  ^${MODE}\saliases: -> ALIAS  
+  ^\s+${ALIAS}\s+${COMMAND} -> Record
+`,
+		data: `
+Exec mode aliases:
+  h                     help
+
+ATM virtual circuit configuration mode aliases:
+  vbr                   vbr-nrt
+`,
+		dict: []map[string]interface{}{
+			{"MODE": "Exec mode", "ALIAS": "h", "COMMAND": "help"},
+			{"MODE": "ATM virtual circuit configuration mode", "ALIAS": "vbr", "COMMAND": "vbr-nrt"},
+			{"MODE": "ATM virtual circuit configuration mode", "ALIAS": "", "COMMAND": ""},
+		},
+	},
+}

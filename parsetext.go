@@ -136,7 +136,8 @@ func (t *ParserOutput) checkLine(line string, fsm TextFSM) error {
 			}
 		}
 	}
-	// fmt.Printf("After Line: '%s: '", line)
+	// fmt.Printf("After Line: '%s: ' current state: '%s'\n", line, t.cur_state_name)
+
 	// for name, varobj := range fsm.Values {
 	// 	fmt.Printf(" %s: curval '%v', filldownval '%v', ", name, varobj.curval, varobj.filldown_value)
 	// }
@@ -157,7 +158,7 @@ func (t *ParserOutput) appendRecord(fsm TextFSM) {
 			newmap[name] = nil
 		case CONTINUE:
 			newmap[name] = value.getFinalValue()
-			if !value.isEmptyValue(value.curval) {
+			if !value.isEmptyValue(newmap[name]) {
 				any_value = true
 			}
 		}
