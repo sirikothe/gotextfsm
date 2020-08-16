@@ -71,32 +71,6 @@ func (t *ParserOutput) ParseTextScanner(scanner *bufio.Scanner, fsm TextFSM, eof
 		// Suppressed if Null EOF state is instantiated.
 		t.appendRecord(fsm)
 	}
-
-	// Handle Fillup case.
-	prev_vals := make(map[string]interface{})
-	// Fix for https://github.com/sirikothe/gotextfsm/issues/2
-	// If Fillup is present, initialize prev_vals to the last record (that may not have been appeneded)
-	if eof_exists {
-		for key, val := range fsm.Values {
-			prev_vals[key] = val.getFinalValue()
-		}
-	}
-	for i := len(t.Dict) - 1; i >= 0; i-- {
-		m := t.Dict[i]
-		for name, valobj := range fsm.Values {
-			if FindIndex(valobj.Options, "Fillup") >= 0 {
-				curval, exists := m[name]
-				if !exists || valobj.isEmptyValue(curval) {
-					prev, prev_exists := prev_vals[name]
-					if prev_exists && prev != nil {
-						m[name] = prev
-					}
-				} else {
-					prev_vals[name] = curval
-				}
-			}
-		}
-	}
 	return nil
 }
 
@@ -124,6 +98,7 @@ func (t *ParserOutput) checkLine(line string, fsm TextFSM) error {
 	for _, rule := range state.rules {
 		varmap := GetNamedMatches(regexp.MustCompile(rule.Regex), line)
 		if varmap != nil {
+			// fmt.Printf("Line '%s'. Regex: '%s' varmap: '%v'\n", line, rule.Regex, varmap)
 			for key, val := range varmap {
 				valobj, exists := fsm.Values[key]
 				if !exists {
@@ -135,6 +110,15 @@ func (t *ParserOutput) checkLine(line string, fsm TextFSM) error {
 					valobj.processMapValue(varmap)
 				} else {
 					valobj.processScalarValue(val)
+				}
+				if FindIndex(valobj.Options, "Fillup") >= 0 && valobj.curval != nil && t.Dict != nil {
+					for i := len(t.Dict) - 1; i >= 0; i-- {
+						if valobj.isEmptyValue(t.Dict[i][key]) {
+							t.Dict[i][key] = valobj.curval
+						} else {
+							break
+						}
+					}
 				}
 				// For some reason, modifying curval in valobj using processValue is not reflecting.
 				// Setting it back to fsm.Values works. Need to understand this further
@@ -154,7 +138,7 @@ func (t *ParserOutput) checkLine(line string, fsm TextFSM) error {
 	}
 	// fmt.Printf("After Line: '%s: '", line)
 	// for name, varobj := range fsm.Values {
-	// 	fmt.Printf(" %s, curval %v, filldownval %v, ", name, varobj.curval, varobj.filldown_value)
+	// 	fmt.Printf(" %s: curval '%v', filldownval '%v', ", name, varobj.curval, varobj.filldown_value)
 	// }
 	// fmt.Printf("\n")
 	return nil

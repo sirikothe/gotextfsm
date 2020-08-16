@@ -22,7 +22,7 @@ type parseTestCase struct {
 func TestParseText(t *testing.T) {
 	tc_count := 0
 	for _, tc := range parseTestCases {
-		// t.Logf("Running test case %s\n", tc.name)
+		t.Logf("Running test case %s\n", tc.name)
 		tc_count++
 		fsm := TextFSM{}
 		err := fsm.ParseString(tc.template)
@@ -997,4 +997,76 @@ Gateway of last resort is not set
 			{"VRF": "", "PROTOCOL": "C", "NETWORK": "10.1.31.102", "MASK": "32", "DISTANCE": "", "METRIC": "", "DIRECT": "directly", "NEXT_HOP": "connected", "INTERFACE": "Loopback100"},
 		},
 	},
-}
+	{
+		name: "Show ip route",
+		template: `Value MODULE (\S+)
+Value PORTS (\d+)
+Value CARD (.+?)
+Value TYPE (\S+)
+Value MODEL (\S+)
+Value SERIAL_NUM (\S+)
+Value Fillup MAC_ADDRESS_START (.+?)
+Value Fillup MAC_ADDRESS_END (.+?)
+Value Fillup HW_VER (\S+)
+Value Fillup SW_VER (\S+|\s+)
+Value Fillup STATUS (\S+)
+Value Fillup UPTIME (.+)
+
+Start
+	^-.+
+	^Module\s+Ports\s+Card\s+Type\s+Model\s+Serial\s+No\.\s*$$
+	^${MODULE}\s+${PORTS}\s+${CARD}\s+${TYPE}\s+${MODEL}\s+${SERIAL_NUM}\s*$$ -> Record
+	^Module\s+MAC\s+addresses\s+Hw\s+Sw\s*$$
+	^${MODULE}\s+(?:${MAC_ADDRESS_START}\s+-\s+${MAC_ADDRESS_END})?\s+${HW_VER}(\s+${SW_VER})?\s*$$
+	^Module\s+Status\s+Uptime\s*$$
+	^${MODULE}\s+${STATUS}(\s+${UPTIME})?\s*$$
+	^\s*$$
+	^. -> Error "LINE NOT FOUND"
+
+EOF			
+`,
+		data: `
+Module  Ports Card Type                Model          Serial No.
+------- ----- ------------------------ -------------- -----------
+1       3     DCS-7500-SUP2 Supervisor DCS-7500-SUP2  XX16380393
+3       144   36-port QSFP100 Linecard 7500R-36CQ-LC  XX16340219
+Fabric1 0     DCS-7508R Fabric         7508R-FM       XX16472732
+
+Module  MAC addresses                         Hw    Sw
+------- ------------------------------------- ----- -------
+1       44:4c:a8:e6:17:5e - 44:4c:a8:e6:17:5f 14.20 4.19.5M
+3       44:4c:a8:e2:d0:28 - 44:4c:a8:e2:d0:b7 13.00
+4       44:4c:a8:ee:a9:2c - 44:4c:a8:ee:a9:bb 13.00
+5       44:4c:a8:ee:97:2c - 44:4c:a8:ee:97:bb 13.00
+6       44:4c:a8:ee:2f:1c - 44:4c:a8:ee:2f:ab 13.00
+7       28:99:3a:a4:01:58 - 28:99:3a:a4:01:e7 12.01
+Fabric1                                       12.03
+Fabric2                                       12.03
+Fabric3                                       12.03
+Fabric4                                       12.03
+Fabric5                                       12.03
+Fabric6                                       12.03
+
+Module  Status Uptime
+------- ------ ----------------
+1       Active
+3       Ok     74 days, 0:25:22
+4       Ok     74 days, 0:25:22
+5       Ok     74 days, 0:25:22
+6       Ok     74 days, 0:25:22
+7       Ok     74 days, 0:25:22
+Fabric1 Ok     74 days, 0:25:22
+Fabric2 Ok     74 days, 0:25:22
+Fabric3 Ok     74 days, 0:25:22
+Fabric4 Ok     74 days, 0:25:22
+Fabric5 Ok     74 days, 0:25:22
+Fabric6 Ok     74 days, 0:25:22`,
+		dict: []map[string]interface{}{
+			{"MODULE": "1", "PORTS": "3", "CARD": "DCS-7500-SUP2", "TYPE": "Supervisor", "MODEL": "DCS-7500-SUP2", "SERIAL_NUM": "XX16380393", "MAC_ADDRESS_START": "44:4c:a8:e6:17:5e", "MAC_ADDRESS_END": "44:4c:a8:e6:17:5f",
+				"HW_VER": "14.20", "SW_VER": "4.19.5M", "STATUS": "Ok", "UPTIME": "74 days, 0:25:22"},
+			{"MODULE": "3", "PORTS": "144", "CARD": "36-port QSFP100", "TYPE": "Linecard", "MODEL": "7500R-36CQ-LC", "SERIAL_NUM": "XX16340219", "MAC_ADDRESS_START": "44:4c:a8:e6:17:5e", "MAC_ADDRESS_END": "44:4c:a8:e6:17:5f",
+				"HW_VER": "14.20", "SW_VER": "4.19.5M", "STATUS": "Ok", "UPTIME": "74 days, 0:25:22"},
+			{"MODULE": "Fabric1", "PORTS": "0", "CARD": "DCS-7508R", "TYPE": "Fabric", "MODEL": "7508R-FM", "SERIAL_NUM": "XX16472732", "MAC_ADDRESS_START": "44:4c:a8:e6:17:5e", "MAC_ADDRESS_END": "44:4c:a8:e6:17:5f",
+				"HW_VER": "14.20", "SW_VER": "4.19.5M", "STATUS": "Ok", "UPTIME": "74 days, 0:25:22"},
+		},
+	}}

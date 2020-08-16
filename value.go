@@ -96,7 +96,7 @@ func (v *TextFSMValue) String() string {
 }
 
 func (v *TextFSMValue) processScalarValue(newval string) {
-	var finalval interface{} = newval
+	var finalval interface{} = nil
 	if FindIndex(v.Options, "List") >= 0 {
 		// If the value is 'List', add the new value to the current value.
 		if newval != "" {
@@ -112,6 +112,8 @@ func (v *TextFSMValue) processScalarValue(newval string) {
 				finalval = append(v.curval.([]string), newval)
 			}
 		}
+	} else {
+		finalval = newval
 	}
 	if FindIndex(v.Options, "Filldown") >= 0 {
 		// If there is Filldown present, Remember the new value as filldown value
