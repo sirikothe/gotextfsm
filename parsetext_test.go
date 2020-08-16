@@ -1193,4 +1193,61 @@ ATM virtual circuit configuration mode aliases:
 			{"MODE": "ATM virtual circuit configuration mode", "ALIAS": "", "COMMAND": ""},
 		},
 	},
+	{
+		name: "Skip record should clear values",
+		template: `Value Filldown CHASSIS_ID (\d+)
+Value Required SLOT_TYPE (Slot|Subslot|Fan|Power|Chassis)
+Value SLOT_ID (\d+|self)
+Value DEVICE_NAME (\S+)
+Value DEVICE_SERIAL_NUMBER (\S+)
+Value MANUFACTURING_DATE (\S+)
+Value VENDOR_NAME (\S+)
+Value MAC_ADDRESS (\S+)
+
+
+Start
+  ^\s*Chassis\s+${CHASSIS_ID}
+  ^\s*${SLOT_TYPE}\s+${SLOT_ID}
+  ^\s*DEVICE_ID
+  ^\s*The\s+operation\s+is\s+not\s+supported\s+ -> Record Start
+  ^\s*DEVICE_NAME\s*:\s*${DEVICE_NAME}
+  ^\s*DEVICE_SERIAL_NUMBER\s*:\s*${DEVICE_SERIAL_NUMBER}
+  ^\s*MAC_ADDRESS\s*:\s*${MAC_ADDRESS}
+  ^\s*MANUFACTURING_DATE\s*:\s*${MANUFACTURING_DATE}
+  ^\s*VENDOR_NAME\s*:\s*${VENDOR_NAME} -> Record Start
+  ^\s*$$
+  ^. -> Error
+  `,
+		data: `Slot 0:
+DEVICE_NAME          : SPC-GP48L
+DEVICE_SERIAL_NUMBER : 11111111111111110000
+MAC_ADDRESS          : NONE
+MANUFACTURING_DATE   : 2014-01-01
+VENDOR_NAME          : H3C
+
+Slot 1:
+DEVICE_NAME          : SPC-GT48L
+DEVICE_SERIAL_NUMBER : 11111111111111110000
+MAC_ADDRESS          : NONE
+MANUFACTURING_DATE   : 2014-04-10
+VENDOR_NAME          : H3C
+
+
+DEVICE_NAME:Simware
+DEVICE_SERIAL_NUMBER:DPPMWWB76
+MAC_ADDRESS:54-69-d3-24-04-00
+MANUFACTURING_DATE:2014-7-16
+VENDOR_NAME:H3C
+Subslot 1:
+The operation is not supported on the specified slot or subslot.
+Subslot 2:
+The operation is not supported on the specified slot or subslot.
+`,
+		dict: []map[string]interface{}{
+			{"SLOT_TYPE": "Slot", "CHASSIS_ID": "", "SLOT_ID": "0", "DEVICE_NAME": "SPC-GP48L", "DEVICE_SERIAL_NUMBER": "11111111111111110000", "MANUFACTURING_DATE": "2014-01-01", "VENDOR_NAME": "H3C", "MAC_ADDRESS": "NONE"},
+			{"SLOT_TYPE": "Slot", "CHASSIS_ID": "", "SLOT_ID": "1", "DEVICE_NAME": "SPC-GT48L", "DEVICE_SERIAL_NUMBER": "11111111111111110000", "MANUFACTURING_DATE": "2014-04-10", "VENDOR_NAME": "H3C", "MAC_ADDRESS": "NONE"},
+			{"SLOT_TYPE": "Subslot", "CHASSIS_ID": "", "SLOT_ID": "1", "DEVICE_NAME": "", "DEVICE_SERIAL_NUMBER": "", "MANUFACTURING_DATE": "", "VENDOR_NAME": "", "MAC_ADDRESS": ""},
+			{"SLOT_TYPE": "Subslot", "CHASSIS_ID": "", "SLOT_ID": "2", "DEVICE_NAME": "", "DEVICE_SERIAL_NUMBER": "", "MANUFACTURING_DATE": "", "VENDOR_NAME": "", "MAC_ADDRESS": ""},
+		},
+	},
 }

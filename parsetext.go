@@ -153,6 +153,7 @@ func (t *ParserOutput) appendRecord(fsm TextFSM) {
 		ret := value.onAppendRecord()
 		switch ret {
 		case SKIP_RECORD:
+			t.clearRecord(fsm, false)
 			return
 		case SKIP_VALUE:
 			newmap[name] = nil
