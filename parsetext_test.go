@@ -22,7 +22,7 @@ type parseTestCase struct {
 func TestParseText(t *testing.T) {
 	tc_count := 0
 	for _, tc := range parseTestCases {
-		t.Logf("Running test case %s\n", tc.name)
+		// t.Logf("Running test case %s\n", tc.name)
 		tc_count++
 		fsm := TextFSM{}
 		err := fsm.ParseString(tc.template)

@@ -176,12 +176,12 @@ JSON: [{"continent":"North America","countries":["USA","Candada","Mexico"],"pers
 
 * Attempts to be 100% compatible with textfsm original textfsm implementation (See differences section)
 * Very nimble code with zero external dependencies on any other libraries.
-* Well tested (> 97% code coverage)
+* Well tested (~ 97% code coverage) *>1740 Test cases executed!!!*
     * All test cases of python's implementation are ported and executed
     * More test cases added as well to test corner cases
-* [TODO] All the test cases of ntc-templates are executed.
+* All the test cases of ntc-templates are executed.
+	* Out of 1578 test cases of ntc-templates, 28 of them are failing (All of them due to reasons listed in `Caveats` Section)
 (https://github.com/networktocode/ntc-templates)
-* [TODO] All the templates of ntc-templates are parsed to make sure there are no errors thrown for valid textfsm templates.
 
 ## Differences with Python's implementation
 Following are the differences between this implementation of TextFSM and original implementation of Python:
@@ -203,26 +203,25 @@ More details about this are discussed at https://github.com/golang/go/issues/725
 * golang does not support perl syntax like `(?<`. The regex like `Value NAME (\S.*(?<!\s))` throws an error
 ## Testing
 ```
-PS C:\Users\siri\code\nuviso\GitHub\gotextfsm> go test  -v
+PS C:\Users\siri\code\nuviso\GitHub\gotextfsm> go test -v
 === RUN   TestParseText
-    parsetext_test.go:82: Executed 38 test cases
+    parsetext_test.go:83: Executed 48 test cases
+--- PASS: TestParseText (0.04s)
 === RUN   TestPyTemplate
     pytemplate_test.go:31: Executed 9 test cases
 --- PASS: TestPyTemplate (0.00s)
 === RUN   TestRuleParse
     rule_test.go:41: Executed 25 test cases
 --- PASS: TestRuleParse (0.00s)
-=== RUN   TestFSMParse
     textfsm_test.go:84: Executed 56 test cases
 --- PASS: TestFSMParse (0.01s)
 === RUN   TestValueParse
     value_test.go:56: Executed 27 test cases
---- PASS: TestValueParse (0.00s)
+--- PASS: TestValueParse (0.01s)
 PASS
-ok      _/C_/Users/siri/code/nuviso/GitHub/gotextfsm    0.207s
+ok      _/C_/Users/siri/code/nuviso/GitHub/gotextfsm    0.235s
 PS C:\Users\siri\code\nuviso\GitHub\gotextfsm> go test -cover
 PASS
-coverage: 97.1% of statements
-ok      _/C_/Users/siri/code/nuviso/GitHub/gotextfsm    0.199s
-PS C:\Users\siri\code\nuviso\GitHub\gotextfsm>
+coverage: 96.9% of statements
+ok      _/C_/Users/siri/code/nuviso/GitHub/gotextfsm    0.236s
 ```
