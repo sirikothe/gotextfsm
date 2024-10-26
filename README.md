@@ -195,12 +195,20 @@ Following are the differences between this implementation of TextFSM and origina
     * texttable
 
 ## Caveats
-There are differences in golang's regular expression implementation and python's.
-Because of this reason, some templates that are valid in python fail parsing in gotextfsm.
-Following are some of the known examples:
-* golang restricts repeat cound to be 1000 while python allows it to be 2^^16 -1. Because of this reason, the regular expressions like `Value SAP_COUNT ([0-9]{1,1500})` throw an error.
-More details about this are discussed at https://github.com/golang/go/issues/7252
-* golang does not support perl syntax like `(?<`. The regex like `Value NAME (\S.*(?<!\s))` throws an error
+There are differences in golang's regular expression implementation and Python's.
+
+:warning: Because of this reason, some templates that are valid in Python fail parsing in gotextfsm.
+
+> [!TIP]
+> Supported regular expression sytnax are those provided by the [`re2` library](https://github.com/google/re2/wiki/Syntax)
+
+> [!IMPORTANT]
+> Following are some of the known examples:
+> * golang restricts repeat cound to be 1000 while Python allows it to be 2^^16 -1. Because of this reason, the regular expressions like `Value SAP_COUNT ([0-9]{1,1500})` throw an error.
+> More details about this are discussed at https://github.com/golang/go/issues/7252
+> * golang does not support negative or positive [lookahead or lookbehind](https://github.com/StefanSchroeder/Golang-Regex-Tutorial/issues/11) nor backreferences
+>     * perl syntax like `(?<`. The regex like `Value NAME (\S.*(?<!\s))` throws an error
+
 ## Testing
 ```
 PS C:\Users\siri\code\nuviso\GitHub\gotextfsm> go test -v
