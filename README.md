@@ -206,7 +206,7 @@ There are differences in golang's regular expression implementation and Python's
 > Following are some of the known examples:
 > * golang restricts repeat cound to be 1000 while Python allows it to be 2^^16 -1. Because of this reason, the regular expressions like `Value SAP_COUNT ([0-9]{1,1500})` throw an error.
 > More details about this are discussed at https://github.com/golang/go/issues/7252
-> * golang does not support negative or positive [lookahead or lookbehind](https://github.com/StefanSchroeder/Golang-Regex-Tutorial/issues/11) nor backreferences
+> * golang does not support negative or positive [lookahead or lookbehind](https://github.com/golang/go/issues/18868) nor backreferences
 >     * perl syntax like `(?<`. The regex like `Value NAME (\S.*(?<!\s))` throws an error
 
 ## Testing
