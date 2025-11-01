@@ -84,7 +84,7 @@ Even though the field value is defined as type `interface{}`, its concrete type 
 * `[]map[string]string` type -> For variables declared as List, but with nested regexes. ex. `Value List person ((?P<name>\w+):\s+(?P<age>\d+)\s+(?P<state>\w{2})\s*)`
 * `string` type -> For every other variable type. This is most common use case.
 
-### Example code to handle the output - Option 1
+### Option 1 - Example code to handle the output
 Following complete code snippet shows an example of how to process the output of parser.
 ```
 package main
@@ -158,7 +158,7 @@ Gandhi: 150 NV
 }
 ```
 
-### Example code to handle the output - Option 2
+### Option 2 - Example code to handle the output
 You can also marshal the resulting dict to json (or yaml) if that make is easier for you to handle the output.
 ```
 	str, err := json.Marshal(parser.Dict)
