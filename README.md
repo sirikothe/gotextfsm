@@ -23,13 +23,13 @@ $ go get github.com/sirikothe/gotextfsm
 
 Import the gotextfsm library:
 
-```
+```go
 import "github.com/sirikothe/gotextfsm"
 ```
 
 Create a TextFSM Object and parse the template:
 
-```
+```go
   fsm := gotextfsm.TextFSM{}
   # template should hold the string of the Textfsm to be parsed.
   err := fsm.ParseString(template)
@@ -39,7 +39,7 @@ Create a TextFSM Object and parse the template:
 
 Parse a raw input string using the fsm object created:
 
-```
+```go
   parser := gotextfsm.ParserOutput{}
   err = parser.ParseTextString(input, fsm, true)
   # err will be nil if the parsing of the input (as per the fsm provided) is successful. 
@@ -50,7 +50,7 @@ At the end of the parsing of input, the parser's Dict object contains the result
 
 ### Complete Example Code
 
-```
+```go
 package main
 
 import (
@@ -100,7 +100,7 @@ Even though the field value is defined as type `interface{}`, its concrete type 
 
 Following complete code snippet shows an example of how to process the output of parser.
 
-```
+```go
 package main
 
 import (
@@ -121,6 +121,7 @@ Start
 	^State: ${state_abbr}
 	^${persons}
 `
+
 	input := `Continent: North America
 Country: USA
 Country: Canada
@@ -164,7 +165,7 @@ Gandhi: 150 NV
 				// ex: Value List persons ((?P<name>\w+):\s+(?P<age>\d+)\s+(?P<state>\w{2})\s*)
 				fmt.Printf("%s: %s\n", key, value.([]map[string]string))
 			default:
-				// Shoule never happen.
+				// Should never happen.
 				panic("Really?")
 			}
 		}
@@ -176,7 +177,7 @@ Gandhi: 150 NV
 
 You can also marshal the resulting dict to json (or yaml) if that make is easier for you to handle the output.
 
-```
+```go
 	str, err := json.Marshal(parser.Dict)
 	if err != nil {
 		fmt.Printf("Unable to convert dict to json \n", err)
@@ -187,7 +188,7 @@ You can also marshal the resulting dict to json (or yaml) if that make is easier
 
 Output from the above example:
 
-```
+```go
 JSON: [{"continent":"North America","countries":["USA","Canada","Mexico"],"persons":[{"age":"50","name":"Siri","state":"CA"},{"age":"22","name":"Raj","state":"NM"},{"age":"150","name":"Gandhi","state":"NV"}],"state_abbr":{"abbr":"CA","fullstate":"California"}}]
 ```
 
