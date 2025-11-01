@@ -13,16 +13,22 @@ The source code of TextFSM in Python is given here: https://github.com/google/te
 This porting attempts to be 100% compatible to the original TextFSM specification given in the above links.
 
 ## Get Started
+
 Get the library:
+
 ```
 $ go get github.com/sirikothe/gotextfsm
 ```
 ### Basic Usage
-Import the gotextfsm library
+
+Import the gotextfsm library:
+
 ```
 import "github.com/sirikothe/gotextfsm"
 ```
-Create a TextFSM Object and parse the template
+
+Create a TextFSM Object and parse the template:
+
 ```
   fsm := gotextfsm.TextFSM{}
   # template should hold the string of the Textfsm to be parsed.
@@ -30,18 +36,20 @@ Create a TextFSM Object and parse the template
   # err will be nil if the parsing of the template is successful. 
   # If will contain error object if the parsing failed.
 ```
-Parse a raw input string using the fsm object created
+
+Parse a raw input string using the fsm object created:
+
 ```
   parser := gotextfsm.ParserOutput{}
   err = parser.ParseTextString(input, fsm, true)
   # err will be nil if the parsing of the input (as per the fsm provided) is successful. 
   # If will contain error object if the parsing failed.
 ```
-At the end of the parsing of input, the parser's Dict object contains the results
 
+At the end of the parsing of input, the parser's Dict object contains the results.
 
+### Complete Example Code
 
-### Complete Example code:
 ```
 package main
 
@@ -72,21 +80,26 @@ Start
 	fmt.Printf("Parsed output: %v\n", parser.Dict)
 }
 ```
+
 ## How to read results of parsing
+
 The defined type for ParserOutput.Dict is `[]map[string]interface{}`.
 
 This is an array of maps. Each element in array represents a record of parsed output.
 
-Each record is of type `map[string]interface{}`, where the key is the field name (type string) and value is the field value (type interface{})
+Each record is of type `map[string]interface{}`, where the key is the field name (type string) and value is the field value (type interface{}).
 
-Even though the field value is defined as type `interface{}`, its concrete type is one of
+Even though the field value is defined as type `interface{}`, its concrete type is one of:
+
 * `[]string` type -> For variables declared as `List` in the definition. ex. `Value List ifnames (\w+)`
 * `map[string]string` type -> For variables declared as scalar, but with nested regexes. ex. `Value person ((?P<name>\w+):\s+(?P<age>\d+)\s+(?P<state>\w{2})\s*)`
 * `[]map[string]string` type -> For variables declared as List, but with nested regexes. ex. `Value List person ((?P<name>\w+):\s+(?P<age>\d+)\s+(?P<state>\w{2})\s*)`
 * `string` type -> For every other variable type. This is most common use case.
 
 ### Option 1 - Example code to handle the output
+
 Following complete code snippet shows an example of how to process the output of parser.
+
 ```
 package main
 
@@ -160,7 +173,9 @@ Gandhi: 150 NV
 ```
 
 ### Option 2 - Example code to handle the output
+
 You can also marshal the resulting dict to json (or yaml) if that make is easier for you to handle the output.
+
 ```
 	str, err := json.Marshal(parser.Dict)
 	if err != nil {
@@ -169,33 +184,38 @@ You can also marshal the resulting dict to json (or yaml) if that make is easier
 		fmt.Printf("JSON: %s\n", str)
 	}
 ```
+
 Output from the above example:
+
 ```
 JSON: [{"continent":"North America","countries":["USA","Canada","Mexico"],"persons":[{"age":"50","name":"Siri","state":"CA"},{"age":"22","name":"Raj","state":"NM"},{"age":"150","name":"Gandhi","state":"NV"}],"state_abbr":{"abbr":"CA","fullstate":"California"}}]
 ```
 
-## Highlights:
+## Highlights
 
-* Attempts to be 100% compatible with the original TextFSM implementation (See [differences section](#differences-with-pythons-implementation))
+* Attempts to be 100% compatible with the original TextFSM implementation (See [differences section](#differences-with-pythons-implementation)).
 * Very nimble code with zero external dependencies on any other libraries.
 * Well tested (~ 97% code coverage) *>1740 Test cases executed!!!*
-    * All test cases of Python's implementation are ported and executed
-    * More test cases added as well to test corner cases
+    * All test cases of Python's implementation are ported and executed.
+    * More test cases added as well to test corner cases.
 * All the test cases of ntc-templates are executed.
-	* Out of 1578 test cases of [ntc-templates](https://github.com/networktocode/ntc-templates), 28 of them are failing (All due to reasons listed in [Caveats](#caveats))
+	* Out of 1578 test cases of [ntc-templates](https://github.com/networktocode/ntc-templates), 28 of them are failing (All due to reasons listed in [Caveats](#caveats)).
 
 ## Differences with Python's implementation
+
 The following are the differences between this implementation of TextFSM and the original Python implementation:
+
 * Python's implementation provides 2 ways of getting results.
-    * Output as a list of lists (outer list represents a record and inner list contains the values. - in the order the Values declared)
+    * Output as a list of lists (outer list represents a record and inner list contains the values in the order they were declared).
     * Output as a list of dicts.
   This implementation provides the output as only slice of maps. It does not provide as slice of slices.
-* [TODO]This implementation (currently) implements the core TextFSM functionality. It does not implement the following 
+* [TODO]This implementation (currently) implements the core TextFSM functionality. It does ***not*** implement the following:
     * clitable
     * terminal
     * texttable
 
 ## Caveats
+
 There are differences in Golang's regular expression implementation and Python's.
 
 :warning: Because of this reason, some templates that are valid in Python fail parsing in gotextfsm.
@@ -205,12 +225,14 @@ There are differences in Golang's regular expression implementation and Python's
 
 > [!IMPORTANT]
 > Following are some of the known examples:
+> 
 > * Golang restricts repeat count to be 1000 while Python allows it to be 2^^16 -1. Because of this reason, the regular expressions like `Value SAP_COUNT ([0-9]{1,1500})` throw an error.
 > More details about this are discussed at https://github.com/golang/go/issues/7252
-> * Golang does not support negative or positive [lookahead or lookbehind](https://github.com/golang/go/issues/18868) nor backreferences
->     * Perl syntax like `(?<`. The regex like `Value NAME (\S.*(?<!\s))` throws an error
+> * Golang does not support negative or positive [lookahead or lookbehind](https://github.com/golang/go/issues/18868) nor backreferences.
+>     * Perl syntax like `(?<`. The regex like `Value NAME (\S.*(?<!\s))` throws an error.
 
 ## Testing
+
 ```
 PS C:\Users\siri\code\nuviso\GitHub\gotextfsm> go test -v
 === RUN   TestParseText
