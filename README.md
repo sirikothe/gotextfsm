@@ -1,14 +1,13 @@
 # gotextfsm
 
-This is a Golang implementation (or version) of Google's TextFSM library.
+This is a Golang implementation (or version) of Google's [TextFSM](https://github.com/google/textfsm)
+Python library.
 
 TextFSM is a template-based state machine for parsing semi-formatted text.
 It was originally developed to allow programmatic access to information returned
 from the command line interface (CLI) of networking devices.
 
 The complete documentation about TextFSM is given here: https://github.com/google/textfsm/wiki/TextFSM
-
-The source code of TextFSM in Python is given here: https://github.com/google/textfsm
 
 This porting attempts to be 100% compatible to the original TextFSM specification given in the above links.
 
