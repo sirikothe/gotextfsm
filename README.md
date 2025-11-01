@@ -1,6 +1,6 @@
 # gotextfsm
 
-This is a golang implementation (or version) of Google's TextFSM library.
+This is a Golang implementation (or version) of Google's TextFSM library.
 
 TextFSM is a template-based state machine for parsing semi-formatted text.
 It was originally developed to allow programmatic access to information returned
@@ -196,7 +196,7 @@ The following are the differences between this implementation of TextFSM and the
     * texttable
 
 ## Caveats
-There are differences in golang's regular expression implementation and Python's.
+There are differences in Golang's regular expression implementation and Python's.
 
 :warning: Because of this reason, some templates that are valid in Python fail parsing in gotextfsm.
 
@@ -205,9 +205,9 @@ There are differences in golang's regular expression implementation and Python's
 
 > [!IMPORTANT]
 > Following are some of the known examples:
-> * golang restricts repeat count to be 1000 while Python allows it to be 2^^16 -1. Because of this reason, the regular expressions like `Value SAP_COUNT ([0-9]{1,1500})` throw an error.
+> * Golang restricts repeat count to be 1000 while Python allows it to be 2^^16 -1. Because of this reason, the regular expressions like `Value SAP_COUNT ([0-9]{1,1500})` throw an error.
 > More details about this are discussed at https://github.com/golang/go/issues/7252
-> * golang does not support negative or positive [lookahead or lookbehind](https://github.com/golang/go/issues/18868) nor backreferences
+> * Golang does not support negative or positive [lookahead or lookbehind](https://github.com/golang/go/issues/18868) nor backreferences
 >     * Perl syntax like `(?<`. The regex like `Value NAME (\S.*(?<!\s))` throws an error
 
 ## Testing
