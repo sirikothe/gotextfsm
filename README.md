@@ -190,7 +190,7 @@ The following are the differences between this implementation of TextFSM and the
     * Output as a list of lists (outer list represents a record and inner list contains the values. - in the order the Values declared)
     * Output as a list of dicts.
   This implementation provides the output as only slice of maps. It does not provide as slice of slices.
-* [TODO]This implementation (currently) implements the core TextFSM Functionality. It does not implement the following 
+* [TODO]This implementation (currently) implements the core TextFSM functionality. It does not implement the following 
     * clitable
     * terminal
     * texttable
