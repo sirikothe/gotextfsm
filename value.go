@@ -65,12 +65,7 @@ func (value *TextFSMValue) Parse(input string, line_num int) error {
 	if len(value.Name) > MAX_NAME_LENG {
 		return fmt.Errorf("%d Line: Invalid Value name '%s' or name too long.", line_num, value.Name)
 	}
-	square_brackets := regexp.MustCompile(`([^\\]?)\[[^]]*]`)
-	regex_without_brackets := square_brackets.ReplaceAllString(value.Regex, "$1")
 	if !regexp.MustCompile(`^\(.*\)$`).MatchString(value.Regex) {
-		return fmt.Errorf("%d Line: Value '%s' must be contained within a '()' pair.", line_num, value.Regex)
-	}
-	if strings.Count(regex_without_brackets, "(") != strings.Count(regex_without_brackets, ")") {
 		return fmt.Errorf("%d Line: Value '%s' must be contained within a '()' pair.", line_num, value.Regex)
 	}
 	if _, err := regexp.Compile(value.Regex); err != nil {
