@@ -207,12 +207,11 @@ JSON: [{"continent":"North America","countries":["USA","Canada","Mexico"],"perso
 The following are the differences between this implementation of TextFSM and the original Python implementation:
 
 * Python's implementation provides 2 ways of getting results.
-    * Output as a list of lists (outer list represents a record and inner list contains the values in the order they were declared).
+    * Output as a list of lists.
+        * The outer list represents a record and inner list contains the values in the order they were declared.
     * Output as a list of dicts.
-
-  This Golang implementation provides the output as only slice of maps. It does not provide as slice of slices.
-
-* [TODO]This implementation (currently) implements the core TextFSM functionality. It does ***not*** implement the following:
+        * This Golang implementation provides the output as only slice of maps. It does not provide a slice of slices.
+* [TODO] :construction: This Golang implementation (currently) implements the core TextFSM functionality. It does ***not*** implement the following:
     * clitable
     * terminal
     * texttable
@@ -221,7 +220,7 @@ The following are the differences between this implementation of TextFSM and the
 
 There are differences in Golang's regular expression implementation and Python's.
 
-:warning: Because of this reason, some templates that are valid in Python fail parsing in gotextfsm.
+:warning: Because of this reason some templates that are valid in Python fail parsing in gotextfsm.
 
 > [!TIP]
 > Supported regular expression sytnax are those provided by the [`re2` library](https://github.com/google/re2/wiki/Syntax)
