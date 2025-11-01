@@ -175,7 +175,7 @@ Gandhi: 150 NV
 
 ### Option 2 - Example code to handle the output
 
-You can also marshal the resulting dict to json (or yaml) if that make is easier for you to handle the output.
+You can also marshal the resulting dict to json (or yaml) if that makes it easier for you to handle the output.
 
 ```go
 	str, err := json.Marshal(parser.Dict)
