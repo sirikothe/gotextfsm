@@ -46,7 +46,7 @@ Parse a raw input string using the fsm object created:
   # If will contain error object if the parsing failed.
 ```
 
-At the end of the parsing of input, the parser's Dict object contains the results.
+At the end of the parsing of input the parser's Dict object contains the results.
 
 ### Complete Example Code
 
@@ -87,7 +87,7 @@ The defined type for ParserOutput.Dict is `[]map[string]interface{}`.
 
 This is an array of maps. Each element in array represents a record of parsed output.
 
-Each record is of type `map[string]interface{}`, where the key is the field name (type string) and value is the field value (type interface{}).
+Each record is of type `map[string]interface{}` where the key is the field name (type string) and value is the field value (type interface{}).
 
 Even though the field value is defined as type `interface{}`, its concrete type is one of:
 
@@ -209,7 +209,9 @@ The following are the differences between this implementation of TextFSM and the
 * Python's implementation provides 2 ways of getting results.
     * Output as a list of lists (outer list represents a record and inner list contains the values in the order they were declared).
     * Output as a list of dicts.
-  This implementation provides the output as only slice of maps. It does not provide as slice of slices.
+
+  This Golang implementation provides the output as only slice of maps. It does not provide as slice of slices.
+
 * [TODO]This implementation (currently) implements the core TextFSM functionality. It does ***not*** implement the following:
     * clitable
     * terminal
