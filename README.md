@@ -186,7 +186,7 @@ JSON: [{"continent":"North America","countries":["USA","Canada","Mexico"],"perso
 (https://github.com/networktocode/ntc-templates)
 
 ## Differences with Python's implementation
-Following are the differences between this implementation of TextFSM and the original Python implementation:
+The following are the differences between this implementation of TextFSM and the original Python implementation:
 * Python's implementation provides 2 ways of getting results.
     * Output as a list of lists (outer list represents a record and inner list contains the values. - in the order the Values declared)
     * Output as a list of dicts.
