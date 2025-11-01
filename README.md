@@ -83,7 +83,8 @@ Even though the field value is defined as type `interface{}`, its concrete type 
 * `map[string]string` type -> For variables declared as scalar, but with nested regexes. ex. `Value person ((?P<name>\w+):\s+(?P<age>\d+)\s+(?P<state>\w{2})\s*)`
 * `[]map[string]string` type -> For variables declared as List, but with nested regexes. ex. `Value List person ((?P<name>\w+):\s+(?P<age>\d+)\s+(?P<state>\w{2})\s*)`
 * `string` type -> For every other variable type. This is most common use case.
-#### Example code to handle the output - Option 1
+
+### Example code to handle the output - Option 1
 Following complete code snippet shows an example of how to process the output of parser.
 ```
 package main
