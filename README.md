@@ -182,8 +182,7 @@ JSON: [{"continent":"North America","countries":["USA","Canada","Mexico"],"perso
     * All test cases of Python's implementation are ported and executed
     * More test cases added as well to test corner cases
 * All the test cases of ntc-templates are executed.
-	* Out of 1578 test cases of ntc-templates, 28 of them are failing (All of them due to reasons listed in `Caveats` Section)
-(https://github.com/networktocode/ntc-templates)
+	* Out of 1578 test cases of [ntc-templates](https://github.com/networktocode/ntc-templates), 28 of them are failing (All due to reasons listed in [Caveats](#caveats))
 
 ## Differences with Python's implementation
 The following are the differences between this implementation of TextFSM and the original Python implementation:
