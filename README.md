@@ -7,7 +7,7 @@ Textfsm is a template based state machine for parsing semi-formatted text. Origi
 
 The complete documentation about text fsm is given here: https://github.com/google/textfsm/wiki/TextFSM
 
-The source code of textfsm in python is given here: https://github.com/google/textfsm
+The source code of textfsm in Python is given here: https://github.com/google/textfsm
 
 This porting attempts to be 100% compatible to the original textfsm specification given in the above links.
 
@@ -178,7 +178,7 @@ JSON: [{"continent":"North America","countries":["USA","Canada","Mexico"],"perso
 * Attempts to be 100% compatible with textfsm original textfsm implementation (See differences section)
 * Very nimble code with zero external dependencies on any other libraries.
 * Well tested (~ 97% code coverage) *>1740 Test cases executed!!!*
-    * All test cases of python's implementation are ported and executed
+    * All test cases of Python's implementation are ported and executed
     * More test cases added as well to test corner cases
 * All the test cases of ntc-templates are executed.
 	* Out of 1578 test cases of ntc-templates, 28 of them are failing (All of them due to reasons listed in `Caveats` Section)
