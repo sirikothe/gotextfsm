@@ -185,6 +185,11 @@ var valTestCases = []valTestCase{
 		regex: `(\\S+Δ)`,
 	},
 	{
+		input: `Value para_beer (\()`,
+		name:  "para_beer",
+		regex: `(\()`,
+	},
+	{
 		// Test regular expression with []
 		input: `Value beer ([(\S+\s\S+)]+)`,
 		name:  "beer",
