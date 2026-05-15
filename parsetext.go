@@ -3,7 +3,6 @@ package gotextfsm
 import (
 	"bufio"
 	"fmt"
-	"regexp"
 	"strings"
 )
 
@@ -96,7 +95,7 @@ func (t *ParserOutput) checkLine(line string, fsm TextFSM) error {
 		panic(fmt.Sprintf("Unknown State %s", t.cur_state_name))
 	}
 	for _, rule := range state.rules {
-		varmap := GetNamedMatches(regexp.MustCompile(rule.Regex), line)
+		varmap := GetNamedMatches(rule.CompiledRegex, line)
 		if varmap != nil {
 			// fmt.Printf("Line '%s'. Regex: '%s' varmap: '%v'\n", line, rule.Regex, varmap)
 			for key, val := range varmap {
