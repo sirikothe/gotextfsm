@@ -7,12 +7,13 @@ import (
 )
 
 type TextFSMRule struct {
-	Regex    string
-	Match    string
-	LineOp   string
-	RecordOp string
-	NewState string
-	LineNum  int
+	Regex         string
+	CompiledRegex *regexp.Regexp
+	Match         string
+	LineOp        string
+	RecordOp      string
+	NewState      string
+	LineNum       int
 }
 
 var LINE_OPERATORS = []string{"Continue", "Next", "Error"}
@@ -77,9 +78,11 @@ func (r *TextFSMRule) Parse(line string, lineNum int, var_map map[string]interfa
 		}
 		r.Regex = regex
 	}
-	if _, err := regexp.Compile(r.Regex); err != nil {
+	compiled, err := regexp.Compile(r.Regex)
+	if err != nil {
 		return fmt.Errorf("Line %d: Invalid regular expression '%s'. Error: '%s'", r.LineNum, r.Regex, err.Error())
 	}
+	r.CompiledRegex = compiled
 	if _, err := regexp.Compile(r.Match); err != nil {
 		return fmt.Errorf("Line %d: Invalid regular expression '%s'. Error: '%s'", r.LineNum, r.Match, err.Error())
 	}
